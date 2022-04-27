@@ -29,7 +29,6 @@ public class GeneralStoreDemoTest extends BaseTest {
 
         driver.findElementById("com.androidsample.generalstore:id/btnLetsShop").click();
         Assert.assertTrue(true, "No errors was thrown");
-
     }
 
     @Test
