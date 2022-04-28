@@ -10,7 +10,7 @@ Preconditions:
 
 
 Commands list:
-appium - it will start appium server
-appium --allow-insecure chromedriver_autodownload - it will start appium server and download appropriate version of crome driver
-npm install appium --chromedriver_version="91"  -  so you can install specific crome driver version
-UIAutomatorViewer - will start tool to search APP elements location
+- appium - it will start appium server
+- appium --allow-insecure chromedriver_autodownload - it will start appium server and download appropriate version of crome driver
+- npm install appium --chromedriver_version="91"  -  so you can install specific crome driver version
+- UIAutomatorViewer - will start tool to search APP elements location
