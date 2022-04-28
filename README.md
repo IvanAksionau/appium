@@ -1,4 +1,4 @@
-Appium basics for Android AP
+# Appium basics for Android AP
 
 Preconditions:
 - Download/install Java and set env variables
