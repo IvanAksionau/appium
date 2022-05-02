@@ -1,4 +1,4 @@
-package ivan.demo.com.apidemos;
+package ivan.demo.com.pageobject;
 
 import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.touch.TapOptions;
@@ -28,12 +28,9 @@ public class AppiumDemoTest extends BaseTest {
 
     @Test
     public void pressAndHoldDemoTest() {
-        driver.findElementByXPath("//android.widget.TextView[@text='Views']").click();//get by text
-        WebElement exListElement =
-                driver.findElementByXPath("//android.widget.TextView[@text='Expandable Lists']");
-
-        touchAction.tap(TapOptions.tapOptions().withElement(element(exListElement)))
-                .perform();
+        HomePage page = new HomePage(driver);
+        page.openVies()
+                .openExpandableLists();
 
         driver.findElementByXPath("//android.widget.TextView[@text='1. Custom Adapter']").click();
 
