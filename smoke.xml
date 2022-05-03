@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Smoke">
+    <test verbose="2" name="smoke">
+        <classes>
+            <class name="ivan.demo.com.pageobject.ApiDemosTest">
+                <methods>
+                    <include name="pressAndHoldDemoTest"/>
+                    <exclude name="androidUIAutomatorDemoTest"/>
+                    <exclude name="swipeDemoTest"/>
+                    <exclude name="scrollDemoTest"/>
+                    <exclude name="dragAndDropDemoTest"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

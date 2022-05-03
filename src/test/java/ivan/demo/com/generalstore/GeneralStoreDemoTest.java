@@ -101,6 +101,6 @@ public class GeneralStoreDemoTest extends BaseTest {
 
     @Override
     public String getResourceFilePath() {
-        return "src/main/resources/General-Store.apk";
+        return properties.getProperty("general.store.apk");
     }
 }

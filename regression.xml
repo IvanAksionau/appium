@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite">
+    <test name="Regression">
+        <classes>
+            <class name="ivan.demo.com.generalstore.GeneralStoreDemoTest">
+                <methods>
+                    <include name="fillStartUpFormAndApply"/>
+                    <include name="validateToastErrorMessage"/>
+                    <include name="scrollToAndAddToCart"/>
+                    <include name="switchFromNativeAPPToWebView"/>
+                </methods>
+            </class>
+            <class name="ivan.demo.com.pageobject.ApiDemosTest">
+                <methods>
+                    <include name="pressAndHoldDemoTest"/>
+                    <exclude name="androidUIAutomatorDemoTest"/>
+                    <exclude name="swipeDemoTest"/>
+                    <exclude name="scrollDemoTest"/>
+                    <exclude name="dragAndDropDemoTest"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
