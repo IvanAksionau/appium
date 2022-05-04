@@ -1,2 +1,1 @@
-cd C:\Users\ivan.aksionau\AppData\Local\Android\Sdk\emulator
-emulator -avd Pixel 4a API 31
+will be overridden by RuntimeUtil class during test execution

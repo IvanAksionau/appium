@@ -8,7 +8,6 @@ public final class PropsUtil {
     private static Properties properties;
 
     private PropsUtil() {
-        //Utility class
     }
 
     public static Properties getProperties() {

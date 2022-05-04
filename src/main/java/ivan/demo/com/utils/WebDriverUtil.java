@@ -15,11 +15,15 @@ public final class WebDriverUtil {
     private final static Properties properties = PropsUtil.getProperties();
     private static AndroidDriver<AndroidElement> driverInstance;
 
+    private WebDriverUtil() {
+    }
+
     public static AndroidDriver<AndroidElement> getDriverInstance() {
         return driverInstance;
     }
 
-    public static void initAndroidDriver(String path) throws MalformedURLException {
+    public static void initAndroidDriver(String path) {
+        URL appiumServerLocation;
         File apiFile = new File(path);
 
         DesiredCapabilities cap = new DesiredCapabilities();
@@ -29,8 +33,11 @@ public final class WebDriverUtil {
 
         //check device is connected in cmd with 'adb devices' command
 //        cap.setCapability(MobileCapabilityType.DEVICE_NAME, "Android Device");
-
-        URL appiumServerLocation = new URL(properties.getProperty("appium.server.url"));
+        try {
+            appiumServerLocation = new URL(properties.getProperty("appium.server.url"));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("URL value is not correct", e);
+        }
         driverInstance = new AndroidDriver<>(appiumServerLocation, cap);
         driverInstance.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     }
