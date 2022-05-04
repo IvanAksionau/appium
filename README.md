@@ -12,7 +12,7 @@ Preconditions:
 - appium - it will start appium server
 - appium --allow-insecure chromedriver_autodownload - it will start appium server and download appropriate version of chrome driver
 - npm install appium --chromedriver_version="91" - so you can install specific chrome driver version(or download it directly to expected folder )
-- UIAutomatorViewer - will start tool to search APP elements location
+- UIAutomatorViewer - will start tool to search APP elements location during codding
 
 # Start emulator manually(in case investigation):
 - cd to C:\Users\user.name\AppData\Local\Android\Sdk\emulator
