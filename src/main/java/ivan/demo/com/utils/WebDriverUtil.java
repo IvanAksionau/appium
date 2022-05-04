@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public final class WebDriverUtil {
-    private final static Properties properties = PropsUtil.getProperties();
+    private final static Properties PROPERTIES = PropsUtil.getProperties();
     private static AndroidDriver<AndroidElement> driverInstance;
 
     private WebDriverUtil() {
@@ -27,14 +27,14 @@ public final class WebDriverUtil {
         File apiFile = new File(path);
 
         DesiredCapabilities cap = new DesiredCapabilities();
-        cap.setCapability(MobileCapabilityType.DEVICE_NAME, properties.getProperty("device.name"));
-        cap.setCapability(MobileCapabilityType.AUTOMATION_NAME, properties.getProperty("automation.name")); //uiAutomator2 framework is for Android testing
+        cap.setCapability(MobileCapabilityType.DEVICE_NAME, PROPERTIES.getProperty("device.name"));
+        cap.setCapability(MobileCapabilityType.AUTOMATION_NAME, PROPERTIES.getProperty("automation.name")); //uiAutomator2 framework is for Android testing
         cap.setCapability(MobileCapabilityType.APP, apiFile.getAbsolutePath());
 
         //check device is connected in cmd with 'adb devices' command
 //        cap.setCapability(MobileCapabilityType.DEVICE_NAME, "Android Device");
         try {
-            appiumServerLocation = new URL(properties.getProperty("appium.server.url"));
+            appiumServerLocation = new URL(PROPERTIES.getProperty("appium.server.url"));
         } catch (MalformedURLException e) {
             throw new RuntimeException("URL value is not correct", e);
         }
