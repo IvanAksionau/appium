@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="Smoke">
-    <test verbose="2" name="smoke">
+    <listeners>
+        <listener class-name="ivan.demo.com.listener.TestListener"/>
+    </listeners>
+    <test verbose="1" name="smoke">
         <classes>
             <class name="ivan.demo.com.pageobject.ApiDemosTest">
                 <methods>

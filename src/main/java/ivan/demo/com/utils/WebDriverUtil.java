@@ -3,11 +3,15 @@ package ivan.demo.com.utils;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.remote.MobileCapabilityType;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
@@ -25,7 +29,7 @@ public final class WebDriverUtil {
         return driverInstance;
     }
 
-    public static void quitAndroidDriver(){
+    public static void quitAndroidDriver() {
         if (getDriverInstance() != null) {
             getDriverInstance().quit();
         }
@@ -50,5 +54,15 @@ public final class WebDriverUtil {
         driverInstance = new AndroidDriver<>(appiumServerLocation, cap);
         driverInstance.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         LOGGER.info("Android Driver was initiated");
+    }
+
+    public static void getScreenshot(String name) {
+        String filePath = System.getProperty("user.dir") + "\\target\\screenshot_" + name + ".png";
+        File screenshot = ((TakesScreenshot) getDriverInstance()).getScreenshotAs(OutputType.FILE);
+        try {
+            FileUtils.copyFile(screenshot, new File(filePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
