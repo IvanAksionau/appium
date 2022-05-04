@@ -13,13 +13,13 @@ public class ApiDemosTest extends BaseTest {
 
     @Test
     public void pressAndHoldDemoTest() {
-        new HomePage()
+        CustomAdapterPage customAdapterPage =  new HomePage()
                 .openVies()
                 .openExpandableLists()
                 .openCustomAdapter()
                 .pressPeopleNamesNote();
 
-        Assert.assertTrue(driver.findElementById("android:id/title").isDisplayed());
+        Assert.assertTrue(customAdapterPage.isSampleMenuDisplayed());
     }
 
     @Test

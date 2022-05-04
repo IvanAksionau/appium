@@ -22,7 +22,7 @@ public class BaseTest implements FilePathProvider {
     protected TouchAction<?> touchAction;
     protected WebDriverWait wait;
 
-    @BeforeClass(timeOut = 120000)
+    @BeforeClass()
     public void setup() {
         RuntimeUtil.startAppiumServer();
         RuntimeUtil.startEmulator();

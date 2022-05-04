@@ -8,7 +8,15 @@ public class CustomAdapterPage extends BasePage {
     @AndroidFindBy(xpath = "//android.widget.TextView[@text='People Names']")
     private AndroidElement peopleNamesNote;
 
-    public void pressPeopleNamesNote() {
+    @AndroidFindBy(id = "android:id/title")
+    private AndroidElement sampleMenuWindow;
+
+    public CustomAdapterPage pressPeopleNamesNote() {
         pressElementWithDuration(peopleNamesNote, 2);
+        return this;
+    }
+
+    public boolean isSampleMenuDisplayed() {
+        return sampleMenuWindow.isDisplayed();
     }
 }
