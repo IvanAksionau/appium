@@ -48,8 +48,6 @@ public class BaseTest implements FilePathProvider {
 
     @AfterMethod
     public void tearDownDriver() {
-        if (WebDriverUtil.getDriverInstance() != null) {
-            WebDriverUtil.getDriverInstance().quit();
-        }
+        WebDriverUtil.quitAndroidDriver();
     }
 }

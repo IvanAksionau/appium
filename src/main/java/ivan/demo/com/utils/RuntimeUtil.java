@@ -2,6 +2,8 @@ package ivan.demo.com.utils;
 
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +17,9 @@ import java.util.List;
 import java.util.Properties;
 
 public final class RuntimeUtil {
-    private static final File FILE =
-            new File(System.getProperty("user.dir") + "/src/main/resources/startEmulator.bat");
+    private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeUtil.class);
+    private static final File FILE = new File(
+            System.getProperty("user.dir") + "/src/main/resources/startEmulator.bat");
     private static final int PORT = 4723;
     private static final Properties PROPERTIES = PropsUtil.getProperties();
     private static AppiumDriverLocalService service;
@@ -30,6 +33,7 @@ public final class RuntimeUtil {
                 .usingPort(PORT)
                 .build();
         if (!service.isRunning()) {
+            LOGGER.info("Appium Service is starting");
             service.start();
         }
     }
@@ -40,11 +44,13 @@ public final class RuntimeUtil {
         }
     }
 
+    // TODO: 5/4/2022 Add virtual device creation https://developer.android.com/studio/command-line/avdmanager
     public static void startEmulator() {
         try {
             initStartEmulatorFile();
             Runtime.getRuntime().exec(FILE.getAbsolutePath());
-            Thread.sleep(15000);
+            LOGGER.info("Please wait for 20 sec till device emulator is starting");
+            Thread.sleep(20000);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Android emulator was not started", e);
         }
@@ -54,6 +60,7 @@ public final class RuntimeUtil {
         try {
             initStopEmulatorFile();
             Runtime.getRuntime().exec(FILE.getAbsolutePath());
+            LOGGER.info("Please wait for 10 sec till device emulator is stopping");
             Thread.sleep(7000);
             FILE.deleteOnExit();
         } catch (IOException | InterruptedException e) {
