@@ -3,6 +3,7 @@
 <suite name="Smoke">
     <listeners>
         <listener class-name="ivan.demo.com.listener.TestListener"/>
+        <listener class-name="ivan.demo.com.listener.TestReportListener"/>
     </listeners>
     <test verbose="1" name="smoke">
         <classes>

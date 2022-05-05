@@ -3,7 +3,6 @@ package ivan.demo.com.listener;
 import ivan.demo.com.utils.WebDriverUtil;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-import org.testng.internal.TestResult;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

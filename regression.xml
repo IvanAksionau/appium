@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="All Test Suite">
+    <listeners>
+        <listener class-name="ivan.demo.com.listener.TestListener"/>
+        <listener class-name="ivan.demo.com.listener.TestReportListener"/>
+    </listeners>
     <test name="Regression">
         <classes>
             <class name="ivan.demo.com.generalstore.GeneralStoreDemoTest">
