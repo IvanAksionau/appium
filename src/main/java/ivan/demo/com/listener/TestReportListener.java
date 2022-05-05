@@ -3,6 +3,7 @@ package ivan.demo.com.listener;
 import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
+import ivan.demo.com.utils.PropsUtil;
 import org.testng.*;
 import org.testng.xml.XmlSuite;
 
@@ -10,9 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 public class TestReportListener implements IReporter {
-    private static final String FILE_PATH = System.getProperty("user.dir") + System.getProperty("test.report.path");
+    private static final String FILE_PATH =
+            System.getProperty("user.dir") + PropsUtil.getProps().getProperty("test.report.path");
     private static final ExtentReports REPORTS = new ExtentReports(FILE_PATH);
 
+    @Override
     public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
         for (ISuite suite : suites) {
             Map<String, ISuiteResult> result = suite.getResults();

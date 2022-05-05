@@ -10,7 +10,7 @@ public final class PropsUtil {
     private PropsUtil() {
     }
 
-    public static Properties getProperties() {
+    public static Properties getProps() {
         if (properties == null) {
             properties = readProperties();
         }

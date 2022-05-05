@@ -10,14 +10,14 @@
             <class name="ivan.demo.com.generalstore.GeneralStoreDemoTest">
                 <methods>
                     <include name="fillStartUpFormAndApply"/>
-                    <include name="validateToastErrorMessage"/>
-                    <include name="scrollToAndAddToCart"/>
-                    <include name="switchFromNativeAPPToWebView"/>
+                    <exclude name="validateToastErrorMessage"/>
+                    <exclude name="scrollToAndAddToCart"/>
+                    <exclude name="switchFromNativeAPPToWebView"/>
                 </methods>
             </class>
             <class name="ivan.demo.com.pageobject.ApiDemosTest">
                 <methods>
-                    <include name="pressAndHoldDemoTest"/>
+                    <exclude name="pressAndHoldDemoTest"/>
                     <exclude name="androidUIAutomatorDemoTest"/>
                     <exclude name="swipeDemoTest"/>
                     <exclude name="scrollDemoTest"/>

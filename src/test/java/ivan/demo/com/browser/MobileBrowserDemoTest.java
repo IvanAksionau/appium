@@ -38,7 +38,7 @@ public class MobileBrowserDemoTest extends BaseTest {
         cap.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
 //        cap.setCapability("chromedriverExecutable","src/main/resources/chromedriver.exe");
 
-        URL appiumServerLocation = new URL(PropsUtil.getProperties().getProperty("appium.server.url"));
+        URL appiumServerLocation = new URL(PropsUtil.getProps().getProperty("appium.server.url"));
         driver = new AndroidDriver<>(appiumServerLocation, cap);
         driver.get("https://rahulshettyacademy.com/angularAppdemo/");
         return driver;

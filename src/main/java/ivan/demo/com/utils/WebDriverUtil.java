@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class WebDriverUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebDriverUtil.class);
-    private final static Properties PROPERTIES = PropsUtil.getProperties();
+    private final static Properties PROPERTIES = PropsUtil.getProps();
     private static AndroidDriver<AndroidElement> driverInstance;
 
     private WebDriverUtil() {

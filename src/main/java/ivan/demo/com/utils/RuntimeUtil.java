@@ -21,7 +21,7 @@ public final class RuntimeUtil {
     private static final File FILE = new File(
             System.getProperty("user.dir") + "/src/main/resources/startEmulator.bat");
     private static final int PORT = 4723;
-    private static final Properties PROPERTIES = PropsUtil.getProperties();
+    private static final Properties PROPERTIES = PropsUtil.getProps();
     private static AppiumDriverLocalService service;
 
     private RuntimeUtil() {

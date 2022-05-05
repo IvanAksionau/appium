@@ -15,7 +15,13 @@ Preconditions:
 - UIAutomatorViewer - will start tool to search APP elements location during codding
 
 # Start emulator manually(in case investigation):
+- before you come to command bellow, please create emulator via Android Studio or consider creation from code 
 - cd to C:\Users\user.name\AppData\Local\Android\Sdk\emulator
 - run command in cmd as 'emulator -avd emulator-name'
 - if not started - check the emulator name: in ~/AppData/Local/Android/Sdk/emulator run command 'emulator -list-avds'
 - to find out an emulator name - : in ~/AppData/Local/Android/Sdk/emulator run command 'adb devices'
+
+# Maven commands:
+- mvn test - so <activeByDefault>true</activeByDefault> profile will be executed, configured into pom.xml
+- mvn test -Pregression - so you can execute a specific test profile(ex. 'regression'), configured into pom.xml
+- mvn test -Demulator.name=emulator-5554 - so you can specify any property

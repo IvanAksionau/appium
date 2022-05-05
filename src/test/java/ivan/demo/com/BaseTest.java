@@ -17,7 +17,7 @@ import org.testng.annotations.BeforeMethod;
 import java.util.Properties;
 
 public class BaseTest implements FilePathProvider {
-    protected static final Properties PROPERTIES = PropsUtil.getProperties();
+    protected static final Properties PROPERTIES = PropsUtil.getProps();
     protected AndroidDriver<AndroidElement> driver;
     protected TouchAction<?> touchAction;
     protected WebDriverWait wait;
