@@ -84,6 +84,7 @@ public final class RuntimeUtil {
         writer.print("");
         writer.close();
 
+        //System.getProperty("emulator.name"); should be used in case of execution from Jenkins
         List<String> lines = Arrays.asList("cd " + PROPERTIES.getProperty("emulator.path"),
                 "adb -s " + PROPERTIES.getProperty("emulator.name") + " emu kill");
         Path file = Paths.get(FILE.getAbsolutePath());

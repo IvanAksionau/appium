@@ -25,3 +25,8 @@ Preconditions:
 - mvn test - so <activeByDefault>true</activeByDefault> profile will be executed, configured into pom.xml
 - mvn test -Pregression - so you can execute a specific test profile(ex. 'regression'), configured into pom.xml
 - mvn test -Demulator.name=emulator-5554 - so you can specify any property
+
+# Commands to run Jenkins:
+- be informed, that a file 'jenkins.war' is added to project root path
+- java -jar jenkins.war -httpPort=8080
+- http://localhost:8080/
