@@ -8,6 +8,7 @@ public class HomePage extends BasePage {
     private AndroidElement views;
 
     public ViewsPage openVies() {
+        LOGGER.info("open Vies page");
         views.click();
         return new ViewsPage();
     }

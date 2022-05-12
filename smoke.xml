@@ -10,7 +10,7 @@
             <class name="ivan.demo.com.pageobject.ApiDemosTest">
                 <methods>
                     <include name="pressAndHoldDemoTest"/>
-                    <exclude name="androidUIAutomatorDemoTest"/>
+                    <include name="androidUIAutomatorDemoTest"/>
                     <exclude name="swipeDemoTest"/>
                     <exclude name="scrollDemoTest"/>
                     <exclude name="dragAndDropDemoTest"/>

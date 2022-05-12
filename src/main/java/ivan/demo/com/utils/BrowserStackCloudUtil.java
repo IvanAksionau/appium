@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.ITestResult;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,20 +48,6 @@ public final class BrowserStackCloudUtil {
         return appId;
     }
 
-    private static String extractAppUrl(Process process) {
-        String output;
-        JsonNode jsonNode;
-
-        output = readProcess(process, "success");
-        try {
-            jsonNode = MAPPER.readTree(output);
-        } catch (JsonProcessingException e) {
-            output = readProcess(process, "error");
-            throw new RuntimeException("Cannot properly map cmd process output as output is: \n".concat(output), e);
-        }
-        return jsonNode.get("app_url").asText();
-    }
-
     private static String readProcess(Process process, String processType) {
         String output;
         BufferedReader reader;
@@ -77,5 +64,33 @@ public final class BrowserStackCloudUtil {
             throw new RuntimeException("Cannot read cmd process output", e);
         }
         return output;
+    }
+
+    private static String extractAppUrl(Process process) {
+        String output;
+        JsonNode jsonNode;
+
+        output = readProcess(process, "success");
+        try {
+            jsonNode = MAPPER.readTree(output);
+        } catch (JsonProcessingException e) {
+            output = readProcess(process, "error");
+            throw new RuntimeException("Cannot properly map cmd process output as output is: \n".concat(output), e);
+        }
+        return jsonNode.get("app_url").asText();
+    }
+
+    public static void setTestFailureStatus(ITestResult result) {
+        WebDriverUtil.executeScript("browserstack_executor: {\"action\": \"setSessionName\", \"arguments\":" +
+                " {\"name\":\"" + result.getName() + "\" }}");
+        WebDriverUtil.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\":" +
+                " {\"status\":\"failed\", \"reason\": \"" + result.getThrowable().getLocalizedMessage() + "\"}}");
+    }
+
+    public static void setTestSuccessStatus(ITestResult result) {
+        WebDriverUtil.executeScript("browserstack_executor: {\"action\": \"setSessionName\", \"arguments\":" +
+                " {\"name\":\"" + result.getName() + "\" }}");
+        WebDriverUtil.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\":" +
+                " {\"status\": \"passed\", \"reason\": \"PASSED\"}}");
     }
 }

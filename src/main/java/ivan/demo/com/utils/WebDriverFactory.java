@@ -3,13 +3,17 @@ package ivan.demo.com.utils;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.remote.MobileCapabilityType;
+import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.SkipException;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +34,7 @@ public final class WebDriverFactory {
     public static void initAndroidDriver(String apkFilePath) {
         boolean isCloudBased = PROPERTIES.getProperty("emulator.location").equals("remote");
         if (isCloudBased) {
-            driverInstance = initRemoteAppiumServer(apkFilePath);
+            driverInstance = initRemoteAppiumServer();
         } else {
             driverInstance = initLocalAppiumServer(apkFilePath);
         }
@@ -56,28 +60,33 @@ public final class WebDriverFactory {
         return new AndroidDriver<>(appiumServerUrl, caps);
     }
 
-    private static AndroidDriver<AndroidElement> initRemoteAppiumServer(String apkFilePath) {
-        String appId = BrowserStackCloudUtil.uploadApkFile(apkFilePath);
+    private static AndroidDriver<AndroidElement> initRemoteAppiumServer() {
         caps = new DesiredCapabilities();
 
         caps.setCapability("browserstack.user", PROPERTIES.getProperty("browserstack.user"));
         caps.setCapability("browserstack.key", PROPERTIES.getProperty("browserstack.key"));
-        caps.setCapability(MobileCapabilityType.APP, appId);
+        caps.setCapability(MobileCapabilityType.APP, PROPERTIES.getProperty("browserstack.appId"));
 //        caps.setCapability("deviceOrientation", "landscape");
 //        caps.setCapability("autoGrantPermissions", "true"); // for auto accepting permission pop-ups
 //        caps.setCapability("browserstack.gpsLocation", "40.730610,-73.935242");// Simulate GPS location
-        caps.setCapability("device", "Google Pixel 3");
-        caps.setCapability("os_version", "9.0");
-        caps.setCapability("project", "First Java Project");
-        caps.setCapability("build", "browserstack-build-1");
-        caps.setCapability("name", "first_test");
+        caps.setCapability("device", PROPERTIES.getProperty("browserstack.device"));
+        caps.setCapability("os_version", PROPERTIES.getProperty("browserstack.os.version"));
+        caps.setCapability("project", "TA with Appium test project example");
+        caps.setCapability("build", LocalDate.now().toString());
+//        caps.setCapability("name", "first_test");
 
         try {
             appiumServerUrl = new URL(PROPERTIES.getProperty("browserstack.server.url"));
         } catch (MalformedURLException e) {
             throw new RuntimeException("URL value is not correct", e);
         }
-        return new AndroidDriver<>(appiumServerUrl, caps);
+
+        try {
+            return new AndroidDriver<>(appiumServerUrl, caps);
+        } catch (SessionNotCreatedException e) {
+            LOGGER.info(e.getMessage());
+            throw new SkipException("Check if Android device is connected", e);
+        }
     }
 
     public static void quitAndroidDriver() {

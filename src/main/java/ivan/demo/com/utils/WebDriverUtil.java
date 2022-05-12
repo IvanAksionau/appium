@@ -1,6 +1,7 @@
 package ivan.demo.com.utils;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 
@@ -22,4 +23,9 @@ public final class WebDriverUtil {
             throw new RuntimeException(e);
         }
     }
+
+    public static void executeScript(String script) {
+        JavascriptExecutor jse = getDriverInstance();
+        jse.executeScript(script);
+   }
 }

@@ -12,6 +12,7 @@ public class CustomAdapterPage extends BasePage {
     private AndroidElement sampleMenuWindow;
 
     public CustomAdapterPage pressPeopleNamesNote() {
+        LOGGER.info("press PeopleNames note");
         pressElementWithDuration(peopleNamesNote, 2);
         return this;
     }

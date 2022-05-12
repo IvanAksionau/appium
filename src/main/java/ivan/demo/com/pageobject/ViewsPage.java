@@ -8,6 +8,7 @@ public class ViewsPage extends BasePage {
     private AndroidElement expandableLists;
 
     public ExpandableListsPage openExpandableLists() {
+        LOGGER.info("open Expandable lists");
         expandableLists.click();
         return new ExpandableListsPage();
     }

@@ -3,12 +3,11 @@ package ivan.demo.com;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
+import ivan.demo.com.utils.BrowserStackCloudUtil;
 import ivan.demo.com.utils.PropsUtil;
 import ivan.demo.com.utils.RuntimeUtil;
 import ivan.demo.com.utils.WebDriverFactory;
-import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.SkipException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -27,6 +26,9 @@ public class BaseTest implements FilePathProvider {
         RuntimeUtil.startAppiumServer();
         if (PROPERTIES.getProperty("emulator.location").equals("local")) {
             RuntimeUtil.startEmulator();
+        } else {
+            String apkId = BrowserStackCloudUtil.uploadApkFile(getResourceFilePath());
+            PROPERTIES.setProperty("browserstack.appId", apkId);
         }
     }
 
@@ -40,11 +42,7 @@ public class BaseTest implements FilePathProvider {
 
     @BeforeMethod
     public void startDriver() {
-        try {
-            WebDriverFactory.initAndroidDriver(getResourceFilePath());
-        } catch (SessionNotCreatedException e) {
-            throw new SkipException("Check if Android device is connected", e);
-        }
+        WebDriverFactory.initAndroidDriver(getResourceFilePath());
         driver = WebDriverFactory.getDriverInstance();
         touchAction = new TouchAction<>(driver);
         wait = new WebDriverWait(driver, 10);

@@ -9,6 +9,7 @@ public class ExpandableListsPage extends BasePage {
     private AndroidElement customAdapter;
 
     public CustomAdapterPage openCustomAdapter() {
+        LOGGER.info("open Custom Adapter");
         customAdapter.click();
         return new CustomAdapterPage();
     }
