@@ -5,7 +5,7 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import ivan.demo.com.utils.PropsUtil;
 import ivan.demo.com.utils.RuntimeUtil;
-import ivan.demo.com.utils.WebDriverUtil;
+import ivan.demo.com.utils.WebDriverFactory;
 import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.SkipException;
@@ -25,29 +25,33 @@ public class BaseTest implements FilePathProvider {
     @BeforeClass()
     public void setup() {
         RuntimeUtil.startAppiumServer();
-        RuntimeUtil.startEmulator();
+        if (PROPERTIES.getProperty("apk.location").equals("local")) {
+            RuntimeUtil.startEmulator();
+        }
     }
 
     @AfterClass
     public void stopService() {
         RuntimeUtil.stopAppiumServer();
-        RuntimeUtil.stopEmulator();
+        if (PROPERTIES.getProperty("apk.location").equals("local")) {
+            RuntimeUtil.stopEmulator();
+        }
     }
 
     @BeforeMethod
     public void startDriver() {
         try {
-            WebDriverUtil.initAndroidDriver(getResourceFilePath());
+            WebDriverFactory.initAndroidDriver(getResourceFilePath());
         } catch (SessionNotCreatedException e) {
             throw new SkipException("Check if Android device is connected", e);
         }
-        driver = WebDriverUtil.getDriverInstance();
+        driver = WebDriverFactory.getDriverInstance();
         touchAction = new TouchAction<>(driver);
         wait = new WebDriverWait(driver, 10);
     }
 
     @AfterMethod
     public void tearDownDriver() {
-        WebDriverUtil.quitAndroidDriver();
+        WebDriverFactory.quitAndroidDriver();
     }
 }

@@ -49,8 +49,8 @@ public final class RuntimeUtil {
         try {
             initStartEmulatorFile();
             Runtime.getRuntime().exec(FILE.getAbsolutePath());
-            LOGGER.info("Please wait for 20 sec till device emulator is starting");
-            Thread.sleep(20000);
+            LOGGER.info("Please wait for 30 sec till device emulator is starting");
+            Thread.sleep(30000);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Android emulator was not started", e);
         }
