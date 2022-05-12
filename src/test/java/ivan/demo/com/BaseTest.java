@@ -25,7 +25,7 @@ public class BaseTest implements FilePathProvider {
     @BeforeClass()
     public void setup() {
         RuntimeUtil.startAppiumServer();
-        if (PROPERTIES.getProperty("apk.location").equals("local")) {
+        if (PROPERTIES.getProperty("emulator.location").equals("local")) {
             RuntimeUtil.startEmulator();
         }
     }
@@ -33,7 +33,7 @@ public class BaseTest implements FilePathProvider {
     @AfterClass
     public void stopService() {
         RuntimeUtil.stopAppiumServer();
-        if (PROPERTIES.getProperty("apk.location").equals("local")) {
+        if (PROPERTIES.getProperty("emulator.location").equals("local")) {
             RuntimeUtil.stopEmulator();
         }
     }

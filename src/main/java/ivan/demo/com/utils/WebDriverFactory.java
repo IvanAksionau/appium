@@ -28,7 +28,7 @@ public final class WebDriverFactory {
     }
 
     public static void initAndroidDriver(String apkFilePath) {
-        boolean isCloudBased = PROPERTIES.getProperty("apk.location").equals("remote");
+        boolean isCloudBased = PROPERTIES.getProperty("emulator.location").equals("remote");
         if (isCloudBased) {
             driverInstance = initRemoteAppiumServer(apkFilePath);
         } else {

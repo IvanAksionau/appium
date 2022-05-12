@@ -30,3 +30,6 @@ Preconditions:
 - be informed, that a file 'jenkins.war' is added to project root path
 - java -jar jenkins.war -httpPort=8080
 - http://localhost:8080/
+
+# BrowserStack:
+- in global.properties file you should specify browserstack.user and browserstack.key values, what you got during registration on BrowserStack site
