@@ -33,7 +33,7 @@ public final class RuntimeUtil {
                 .usingPort(PORT)
                 .build();
         if (!service.isRunning()) {
-            LOGGER.info("Appium Service is starting");
+            LOGGER.info("Local Appium Service is starting on ".concat(PROPERTIES.getProperty("appium.server.url")));
             service.start();
         }
     }

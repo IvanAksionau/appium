@@ -23,8 +23,8 @@ public class BaseTest implements FilePathProvider {
 
     @BeforeClass()
     public void setup() {
-        RuntimeUtil.startAppiumServer();
         if (PROPERTIES.getProperty("emulator.location").equals("local")) {
+            RuntimeUtil.startAppiumServer();
             RuntimeUtil.startEmulator();
         } else {
             String apkId = BrowserStackCloudUtil.uploadApkFile(getResourceFilePath());
@@ -34,8 +34,8 @@ public class BaseTest implements FilePathProvider {
 
     @AfterClass
     public void stopService() {
-        RuntimeUtil.stopAppiumServer();
         if (PROPERTIES.getProperty("emulator.location").equals("local")) {
+            RuntimeUtil.stopAppiumServer();
             RuntimeUtil.stopEmulator();
         }
     }

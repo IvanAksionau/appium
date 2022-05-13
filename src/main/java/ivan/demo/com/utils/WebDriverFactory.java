@@ -64,6 +64,7 @@ public final class WebDriverFactory {
 
         caps.setCapability("browserstack.user", PROPERTIES.getProperty("browserstack.user"));
         caps.setCapability("browserstack.key", PROPERTIES.getProperty("browserstack.key"));
+//        caps.setCapability("browserstack.networkLogs", PROPERTIES.getProperty("browserstack.networkLogs"));
         caps.setCapability(MobileCapabilityType.APP, PROPERTIES.getProperty("browserstack.appId"));
 //        caps.setCapability("deviceOrientation", "landscape");
 //        caps.setCapability("autoGrantPermissions", "true"); // for auto accepting permission pop-ups
