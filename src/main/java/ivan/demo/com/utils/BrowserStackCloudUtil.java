@@ -20,7 +20,7 @@ public final class BrowserStackCloudUtil {
     private BrowserStackCloudUtil() {
     }
 
-    private static String buildCommand(String filePath) {
+    private static String buildUploadApkCommand(String filePath) {
         return "curl -u \""
                 .concat(PROPERTIES.getProperty("browserstack.user"))
                 .concat(":")
@@ -30,13 +30,13 @@ public final class BrowserStackCloudUtil {
                 .concat("\" -F \"file=@")
                 .concat(System.getProperty("user.dir"))
                 .concat("\\")
-                .concat(filePath.replace("/", "\\"))
+                .concat(filePath)
                 .concat("\"");
     }
 
     public static String uploadApkFile(String filePath) {
         Process process;
-        String command = buildCommand(filePath);
+        String command = buildUploadApkCommand(filePath);
         try {
             LOGGER.info("APK is uploading to a Browserstack resource...");
             process = Runtime.getRuntime().exec(command);
