@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -33,9 +34,9 @@ public final class RuntimeUtil {
                 .usingPort(PORT)
                 .build();
         if (!service.isRunning()) {
-            LOGGER.info("Local Appium Service is starting on ".concat(PROPERTIES.getProperty("appium.server.url")));
             service.start();
         }
+        LOGGER.info("Local Appium server is started on ".concat(PROPERTIES.getProperty("appium.server.url")));
     }
 
     public static void stopAppiumServer() {
@@ -69,9 +70,7 @@ public final class RuntimeUtil {
     }
 
     private static void initStartEmulatorFile() throws IOException {
-        PrintWriter writer = new PrintWriter(FILE.getAbsolutePath());
-        writer.print("");
-        writer.close();
+        clearFileData(FILE.getAbsolutePath());
 
         List<String> lines = Arrays.asList("cd " + PROPERTIES.getProperty("emulator.path"),
                 "emulator -avd " + PROPERTIES.getProperty("device.name"));
@@ -80,14 +79,18 @@ public final class RuntimeUtil {
     }
 
     private static void initStopEmulatorFile() throws IOException {
-        PrintWriter writer = new PrintWriter(FILE.getAbsolutePath());
-        writer.print("");
-        writer.close();
+        clearFileData(FILE.getAbsolutePath());
 
         //System.getProperty("emulator.name"); should be used in case of execution from Jenkins
         List<String> lines = Arrays.asList("cd " + PROPERTIES.getProperty("emulator.path"),
                 "adb -s " + PROPERTIES.getProperty("emulator.name") + " emu kill");
         Path file = Paths.get(FILE.getAbsolutePath());
         Files.write(file, lines, StandardCharsets.UTF_8);
+    }
+
+    private static void clearFileData(String path) throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(path);
+        writer.print("");
+        writer.close();
     }
 }
