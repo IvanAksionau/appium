@@ -5,15 +5,12 @@
         <listener class-name="ivan.demo.com.listener.TestListener"/>
         <listener class-name="ivan.demo.com.listener.TestReportListener"/>
     </listeners>
-    <test verbose="1" name="smoke">
+    <test verbose="3" name="smoke" thread-count="5" parallel="methods">
         <classes>
             <class name="ivan.demo.com.pageobject.ApiDemosTest">
                 <methods>
                     <include name="pressAndHoldDemoTest"/>
                     <include name="androidUIAutomatorDemoTest"/>
-                    <exclude name="swipeDemoTest"/>
-                    <exclude name="scrollDemoTest"/>
-                    <exclude name="dragAndDropDemoTest"/>
                 </methods>
             </class>
         </classes>

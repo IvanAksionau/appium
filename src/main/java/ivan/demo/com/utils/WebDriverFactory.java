@@ -13,14 +13,13 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public final class WebDriverFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebDriverFactory.class);
     private static final Properties PROPERTIES = PropsUtil.getProps();
-    private static AndroidDriver<AndroidElement> driverInstance;
+    private static ThreadLocal<AndroidDriver<AndroidElement>> driverInstance;
     private static DesiredCapabilities caps;
     private static URL appiumServerUrl;
 
@@ -28,18 +27,18 @@ public final class WebDriverFactory {
     }
 
     public static AndroidDriver<AndroidElement> getDriverInstance() {
-        return driverInstance;
+        return driverInstance.get();
     }
 
     public static void initAndroidDriver(String apkFilePath) {
         boolean isCloudBased = PROPERTIES.getProperty("emulator.location").equals("remote");
         if (isCloudBased) {
-            driverInstance = initRemoteAppiumServer();
+            driverInstance = ThreadLocal.withInitial(WebDriverFactory::initRemoteAppiumServer);
         } else {
-            driverInstance = initLocalAppiumServer(apkFilePath);
+            driverInstance = ThreadLocal.withInitial(() -> WebDriverFactory.initLocalAppiumServer(apkFilePath));
         }
 
-        driverInstance.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        getDriverInstance().manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         LOGGER.info("Android Driver was initiated");
     }
 
