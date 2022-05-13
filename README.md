@@ -33,3 +33,9 @@ Preconditions:
 
 # BrowserStack:
 - in global.properties file you should specify browserstack.user and browserstack.key values, what you got during registration on BrowserStack site
+
+# Useful links:
+- https://appium.io/docs/en/writing-running-appium/web/chromedriver/
+- https://developer.android.com/studio/debug/dev-options.html
+- https://docs.oracle.com/javase/7/docs/api/java/lang/ThreadLocal.html
+- https://www.browserstack.com/
