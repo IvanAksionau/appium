@@ -22,9 +22,9 @@ Preconditions:
 - to find out an emulator name - : in ~/AppData/Local/Android/Sdk/emulator run command 'adb devices'
 
 # Maven commands:
-- mvn test - so <activeByDefault>true</activeByDefault> profile will be executed, configured into pom.xml
+- mvn test - so 'activeByDefault' profile will be executed, configured into pom.xml
 - mvn test -Psmoke - so you can execute a specific test profile(ex. 'smoke'), configured into pom.xml
-- mvn test -Demulator.name=emulator-5554 - so you can specify any property
+- mvn test -Demulator.name=emulator-5554 - so you can set any property defined into .properties file
 
 # Commands to run Jenkins:
 - be informed, that a file 'jenkins.war' is added to project root path
