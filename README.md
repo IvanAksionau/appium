@@ -24,7 +24,7 @@ Preconditions:
 # Maven commands:
 - mvn test - so 'activeByDefault' profile will be executed, configured into pom.xml
 - mvn test -Psmoke - so you can execute a specific test profile(ex. 'smoke'), configured into pom.xml
-- mvn test -Demulator.name=emulator-5554 - so you can specify any property
+- mvn test "-Dbrowserstack.user=user_value" "-Dbrowserstack.key=keyValue" "-Demulator.location=remote" - so you can specify any property
 
 # Commands to run Jenkins:
 - be informed, that a file 'jenkins.war' is added to project root path
@@ -39,3 +39,4 @@ Preconditions:
 - https://developer.android.com/studio/debug/dev-options.html
 - https://docs.oracle.com/javase/7/docs/api/java/lang/ThreadLocal.html
 - https://www.browserstack.com/
+- 

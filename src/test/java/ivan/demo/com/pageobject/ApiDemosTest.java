@@ -19,7 +19,7 @@ public class ApiDemosTest extends BaseTest {
                 .openCustomAdapter()
                 .pressPeopleNamesNote();
 
-        Assert.assertTrue(!customAdapterPage.isSampleMenuDisplayed(),"sampleMenu is not displayed");
+        Assert.assertTrue(customAdapterPage.isSampleMenuDisplayed(),"sampleMenu is displayed");
     }
 
     @Test
