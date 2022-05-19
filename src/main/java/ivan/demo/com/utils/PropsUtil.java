@@ -1,12 +1,16 @@
 package ivan.demo.com.utils;
 
+import com.google.common.collect.Maps;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Properties;
 
 public final class PropsUtil {
+    private static final HashMap<String, String> SYSTEM_PROPS
+            = Maps.newHashMap(Maps.fromProperties(System.getProperties()));
     private static Properties properties;
 
     private PropsUtil() {
@@ -31,6 +35,14 @@ public final class PropsUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        properties.keySet().forEach(it -> overrideFromSystemProps(properties, it.toString()));
         return properties;
+    }
+
+    private static void overrideFromSystemProps(Properties properties, String key) {
+        if (SYSTEM_PROPS.get(key) != null) {
+            properties.setProperty(key, SYSTEM_PROPS.get(key));
+        }
     }
 }
