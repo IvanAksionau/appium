@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.testng.ITestResult;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Properties;
@@ -37,11 +36,10 @@ public final class BrowserStackCloudUtil {
 
     public static String uploadApkFile(String filePath) {
         Process process;
-        File myObj = new File(filePath);
-        String command = buildUploadApkCommand(myObj.getPath());
+        String command = buildUploadApkCommand(filePath).replace("\\", "/");
         try {
             LOGGER.info("APK starts uploading to a Browserstack resource...");
-            LOGGER.info("Upload command is :" + System.lineSeparator() + buildUploadApkCommand(myObj.getPath()));
+            LOGGER.info("Upload command is :" + command);
             process = Runtime.getRuntime().exec(command);
         } catch (IOException e) {
             throw new RuntimeException("BrowserStack file upload is failed", e);
