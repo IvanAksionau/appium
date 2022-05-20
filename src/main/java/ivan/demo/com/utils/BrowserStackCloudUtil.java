@@ -40,10 +40,9 @@ public final class BrowserStackCloudUtil {
         File tempFile = new File(filePath.replace("\\", "/"));
 
         boolean exists = tempFile.exists();
-        String command = buildUploadApkCommand(filePath).replace("\\", "/");
+        String command = buildUploadApkCommand(filePath);
         try {
-            LOGGER.info("APK starts uploading to a Browserstack resource..." + exists);
-            LOGGER.info("Upload command is :" + command);
+            LOGGER.info("Please wait while the APK is uploading to a Browserstack resource..." + exists);
             process = Runtime.getRuntime().exec(command);
         } catch (IOException e) {
             throw new RuntimeException("BrowserStack file upload is failed", e);
@@ -80,7 +79,7 @@ public final class BrowserStackCloudUtil {
             jsonNode = MAPPER.readTree(output);
         } catch (JsonProcessingException | IllegalArgumentException e) {
             output = readProcess(process, "error");
-            throw new RuntimeException("Cannot properly map cmd process output as output is: \n".concat(output), e);
+            throw new RuntimeException("Cannot properly map cmd process output. Output is: \n".concat(output), e);
         }
         return jsonNode.get("app_url").asText();
     }
