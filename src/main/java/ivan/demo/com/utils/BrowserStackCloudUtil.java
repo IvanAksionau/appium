@@ -42,6 +42,7 @@ public final class BrowserStackCloudUtil {
         boolean exists = tempFile.exists();
         String command = buildUploadApkCommand(filePath);
         try {
+            System.out.println(tempFile.getAbsolutePath());
             LOGGER.info("Please wait while the APK is uploading to a Browserstack resource..." + exists);
             LOGGER.info("Upload command is: " + command);
             process = Runtime.getRuntime().exec(command);
