@@ -38,7 +38,8 @@ public final class BrowserStackCloudUtil {
         Process process;
         String command = buildUploadApkCommand(filePath);
         try {
-            LOGGER.info("APK is uploading to a Browserstack resource...");
+            LOGGER.info("APK is uploading to a Browserstack resource with command:"
+            + System.lineSeparator() + buildUploadApkCommand(filePath));
             process = Runtime.getRuntime().exec(command);
         } catch (IOException e) {
             throw new RuntimeException("BrowserStack file upload is failed", e);
