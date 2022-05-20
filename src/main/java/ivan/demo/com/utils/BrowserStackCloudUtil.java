@@ -73,7 +73,7 @@ public final class BrowserStackCloudUtil {
         output = readProcess(process, "success");
         try {
             jsonNode = MAPPER.readTree(output);
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | IllegalArgumentException e) {
             output = readProcess(process, "error");
             throw new RuntimeException("Cannot properly map cmd process output as output is: \n".concat(output), e);
         }
