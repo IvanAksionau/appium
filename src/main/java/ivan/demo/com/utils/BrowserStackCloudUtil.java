@@ -35,17 +35,17 @@ public final class BrowserStackCloudUtil {
 
     public static String uploadApkFile(String filePath) {
         Process process;
-        String command = buildUploadApkCommand(filePath);
-        try {
-            LOGGER.info("Please wait while the APK is uploading to a Browserstack resource...");
-            LOGGER.info("Upload command is: " + command);// TODO: 5/20/2022 delete after jenkins issue is fixed
-            process = Runtime.getRuntime().exec(command);
-        } catch (IOException e) {
-            throw new RuntimeException("BrowserStack file upload is failed", e);
-        }
-        String appId = extractAppUrl(process);
-        LOGGER.info("APK is uploaded to a Browserstack with ID: " + appId);
-        return appId;
+//        String command = buildUploadApkCommand(filePath);
+//        try {
+//            LOGGER.info("Please wait while the APK is uploading to a Browserstack resource...");
+//            LOGGER.info("Upload command is: " + command);// TODO: 5/20/2022 delete after jenkins issue is fixed
+//            process = Runtime.getRuntime().exec(command);
+//        } catch (IOException e) {
+//            throw new RuntimeException("BrowserStack file upload is failed", e);
+//        }
+//        String appId = extractAppUrl(process);
+//        LOGGER.info("APK is uploaded to a Browserstack with ID: " + appId);
+        return "bs://d52293e24d0dc85cfeaec2bb716cea1b42f55119";
     }
 
     private static String readProcess(Process process, String processType) {

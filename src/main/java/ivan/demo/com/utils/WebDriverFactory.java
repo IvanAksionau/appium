@@ -31,6 +31,7 @@ public final class WebDriverFactory {
     }
 
     public static void initAndroidDriver(String apkFilePath) {
+        LOGGER.info("initAndroidDriver method call----------------------------" + Thread.currentThread().getId());
         boolean isCloudBased = PROPERTIES.getProperty("emulator.location").equals("remote");
         if (isCloudBased) {
             driverInstance = ThreadLocal.withInitial(WebDriverFactory::initRemoteAppiumServer);
@@ -39,7 +40,7 @@ public final class WebDriverFactory {
         }
 
         getDriverInstance().manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        LOGGER.info("Android Driver was initiated");
+        LOGGER.info("Android Driver was initiated"+ Thread.currentThread().getId());
     }
 
     private static AndroidDriver<AndroidElement> initLocalAppiumServer(String apkFilePath) {
@@ -61,7 +62,7 @@ public final class WebDriverFactory {
 
     private static AndroidDriver<AndroidElement> initRemoteAppiumServer() {
         caps = new DesiredCapabilities();
-
+        LOGGER.info("initRemoteAppiumServer method call----------------------------" + Thread.currentThread().getId());
         caps.setCapability("browserstack.user", PROPERTIES.getProperty("browserstack.user"));
         caps.setCapability("browserstack.key", PROPERTIES.getProperty("browserstack.key"));
 //        caps.setCapability("browserstack.networkLogs", PROPERTIES.getProperty("browserstack.networkLogs"));
@@ -73,6 +74,7 @@ public final class WebDriverFactory {
         caps.setCapability("os_version", PROPERTIES.getProperty("browserstack.os.version"));
         caps.setCapability("project", "TA with Appium test project example");
         caps.setCapability("build", LocalDate.now().toString());
+        caps.setCapability("browserstack.console", "info");
 //        caps.setCapability("name", "first_test");
 
         try {
@@ -91,6 +93,7 @@ public final class WebDriverFactory {
 
     public static void quitAndroidDriver() {
         if (getDriverInstance() != null) {
+            LOGGER.info("quitAndroidDriver method call----------------------------" + Thread.currentThread().getId());
             getDriverInstance().quit();
         }
     }

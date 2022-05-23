@@ -8,6 +8,8 @@ import ivan.demo.com.utils.PropsUtil;
 import ivan.demo.com.utils.RuntimeUtil;
 import ivan.demo.com.utils.WebDriverFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -16,6 +18,7 @@ import org.testng.annotations.BeforeMethod;
 import java.util.Properties;
 
 public class BaseTest implements FilePathProvider {
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     protected static final Properties PROPERTIES = PropsUtil.getProps();
     protected AndroidDriver<AndroidElement> driver;
     protected TouchAction<?> touchAction;
@@ -42,6 +45,7 @@ public class BaseTest implements FilePathProvider {
 
     @BeforeMethod
     public void startDriver() {
+        LOGGER.info("startDriver method was called"+ Thread.currentThread().getId());
         WebDriverFactory.initAndroidDriver(getResourceFilePath());
         driver = WebDriverFactory.getDriverInstance();
         touchAction = new TouchAction<>(driver);

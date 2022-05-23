@@ -24,15 +24,13 @@ public class ApiDemosTest extends BaseTest {
 
     @Test
     public void androidUIAutomatorDemoTest() {
-//      execute Android code
-//        driver.findElementByAndroidUIAutomator("attribute("value")");
-        driver.findElementByAndroidUIAutomator("text(\"Views\")").click();
+        CustomAdapterPage customAdapterPage =  new HomePage()
+                .openVies()
+                .openExpandableLists()
+                .openCustomAdapter()
+                .pressPeopleNamesNote();
 
-//      driver.findElementByAndroidUIAutomator("new UiSelector().property(value)").click();
-        int size = driver.findElementsByAndroidUIAutomator("new UiSelector().clickable(true)").size();
-        System.out.print(size);
-
-        Assert.assertTrue(size > 5);
+        Assert.assertTrue(customAdapterPage.isSampleMenuDisplayed(),"sampleMenu is displayed");
     }
 
     @Test
