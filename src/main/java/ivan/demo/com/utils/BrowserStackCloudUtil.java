@@ -29,7 +29,8 @@ public final class BrowserStackCloudUtil {
                 .concat(PROPERTIES.getProperty("browserstack.upload.url"))
                 .concat("\" -F \"file=@")
                 .concat(System.getProperty("user.dir"))
-                .concat(filePath);
+                .concat(filePath)
+                .concat("\"");
     }
 
     public static String uploadApkFile(String filePath) {
