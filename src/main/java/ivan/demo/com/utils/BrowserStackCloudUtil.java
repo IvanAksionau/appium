@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.testng.ITestResult;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Properties;
@@ -30,21 +29,16 @@ public final class BrowserStackCloudUtil {
                 .concat(PROPERTIES.getProperty("browserstack.upload.url"))
                 .concat("\" -F \"file=@")
                 .concat(System.getProperty("user.dir"))
-                .concat("/")
-                .concat(filePath)
-                .concat("\"");
+                .concat("\\")
+                .concat(filePath);
     }
 
     public static String uploadApkFile(String filePath) {
         Process process;
-        File tempFile = new File(filePath.replace("\\", "/"));
-
-        boolean exists = tempFile.exists();
         String command = buildUploadApkCommand(filePath);
         try {
-            System.out.println(tempFile.getAbsolutePath());
-            LOGGER.info("Please wait while the APK is uploading to a Browserstack resource..." + exists);
-            LOGGER.info("Upload command is: " + command);
+            LOGGER.info("Please wait while the APK is uploading to a Browserstack resource...");
+            LOGGER.info("Upload command is: " + command);// TODO: 5/20/2022 delete after jenkins issue is fixed
             process = Runtime.getRuntime().exec(command);
         } catch (IOException e) {
             throw new RuntimeException("BrowserStack file upload is failed", e);
