@@ -35,7 +35,7 @@ public final class BrowserStackCloudUtil {
 
     public static String uploadApkFile(String filePath) {
         Process process;
-        String command = "curl -u \"ivan_vOIhrM:qFr7kmY16GrsXyPhNwmN\" -X POST \"https://api-cloud.browserstack.com/app-automate/upload\" -F \"file=@//var//jenkins_home//workspace//appiumTest//src//main//resources/ApiDemosDebug.apk\"";
+        String command = "curl -u \"ivan_vOIhrM:qFr7kmY16GrsXyPhNwmN\" -X POST \"https://api-cloud.browserstack.com/app-automate/upload\" -F \"file=@\\var\\jenkins_home\\workspace\\appiumTest\\src\\main\\resources\\ApiDemosDebug.apk\"";
         try {
             LOGGER.info("Please wait while the APK is uploading to a Browserstack resource...");
             LOGGER.info("Upload command is: " + command);// TODO: 5/20/2022 delete after jenkins issue is fixed
