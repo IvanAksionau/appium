@@ -43,7 +43,7 @@ public final class WebDriverFactory {
         LOGGER.info("Android Driver was initiated"+ Thread.currentThread().getId());
     }
 
-    private static AndroidDriver<AndroidElement> initLocalAppiumServer(String apkFilePath) {
+    private static AndroidDriver<AndroidElement>  initLocalAppiumServer(String apkFilePath) {
         File apiFile = new File(apkFilePath);
         caps = new DesiredCapabilities();
 

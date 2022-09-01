@@ -29,14 +29,19 @@ public final class RuntimeUtil {
     }
 
     public static void startAppiumServer() {
-        service = new AppiumServiceBuilder()
-                .withIPAddress(PROPERTIES.getProperty("ip.address"))
-                .usingPort(PORT)
-                .build();
+        ThreadLocal<AppiumDriverLocalService> threadLocal = ThreadLocal.withInitial(RuntimeUtil::buildService);
+        service = threadLocal.get();
         if (!service.isRunning()) {
             service.start();
         }
         LOGGER.info("Local Appium server is started on ".concat(PROPERTIES.getProperty("appium.server.url")));
+    }
+
+    private static AppiumDriverLocalService buildService() {
+        return new AppiumServiceBuilder()
+                .withIPAddress(PROPERTIES.getProperty("ip.address"))
+                .usingPort(PORT)
+                .build();
     }
 
     public static void stopAppiumServer() {
