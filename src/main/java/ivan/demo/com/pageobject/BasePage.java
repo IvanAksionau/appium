@@ -19,7 +19,7 @@ public class BasePage {
     protected TouchAction<?> touchAction;
 
     protected BasePage() {
-        this.driver = WebDriverFactory.getDriverInstance();
+        this.driver = WebDriverFactory.getInstance();
         touchAction = new TouchAction<>(this.driver);
         PageFactory.initElements(new AppiumFieldDecorator((driver)), this);
     }

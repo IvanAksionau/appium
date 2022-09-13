@@ -11,6 +11,7 @@
                 <methods>
                     <include name="pressAndHoldDemoTest"/>
                     <include name="androidUIAutomatorDemoTest"/>
+                    <include name="swipeDemoTest"/>
                 </methods>
             </class>
         </classes>

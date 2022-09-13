@@ -17,20 +17,21 @@ import org.testng.annotations.BeforeMethod;
 
 import java.util.Properties;
 
-public class BaseTest implements FilePathProvider {
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+public abstract class BaseTest {
     protected static final Properties PROPERTIES = PropsUtil.getProps();
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     protected AndroidDriver<AndroidElement> driver;
     protected TouchAction<?> touchAction;
     protected WebDriverWait wait;
 
     @BeforeClass()
     public void setup() {
+        setResourceFilePath();
         if (PROPERTIES.getProperty("emulator.location").equals("local")) {
             RuntimeUtil.startAppiumServer();
             RuntimeUtil.startEmulator();
         } else {
-            String apkId = BrowserStackCloudUtil.uploadApkFile(getResourceFilePath());
+            String apkId = BrowserStackCloudUtil.uploadApkFile(PROPERTIES.getProperty("apk"));
             PROPERTIES.setProperty("browserstack.appId", apkId);
         }
     }
@@ -45,9 +46,8 @@ public class BaseTest implements FilePathProvider {
 
     @BeforeMethod
     public void startDriver() {
-        LOGGER.info("startDriver method was called"+ Thread.currentThread().getId());
-        WebDriverFactory.initAndroidDriver(getResourceFilePath());
-        driver = WebDriverFactory.getDriverInstance();
+        LOGGER.info("startDriver method was called -----" + Thread.currentThread().getId());
+        driver = WebDriverFactory.getInstance();
         touchAction = new TouchAction<>(driver);
         wait = new WebDriverWait(driver, 10);
     }
@@ -56,4 +56,6 @@ public class BaseTest implements FilePathProvider {
     public void tearDownDriver() {
         WebDriverFactory.quitAndroidDriver();
     }
+
+    protected abstract void setResourceFilePath();
 }

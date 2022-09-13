@@ -43,4 +43,9 @@ public class MobileBrowserDemoTest extends BaseTest {
         driver.get("https://rahulshettyacademy.com/angularAppdemo/");
         return driver;
     }
+
+    @Override
+    protected void setResourceFilePath() {
+
+    }
 }

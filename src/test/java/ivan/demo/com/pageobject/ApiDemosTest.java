@@ -13,24 +13,24 @@ public class ApiDemosTest extends BaseTest {
 
     @Test
     public void pressAndHoldDemoTest() {
-        CustomAdapterPage customAdapterPage =  new HomePage()
+        CustomAdapterPage customAdapterPage = new HomePage()
                 .openVies()
                 .openExpandableLists()
                 .openCustomAdapter()
                 .pressPeopleNamesNote();
 
-        Assert.assertTrue(customAdapterPage.isSampleMenuDisplayed(),"sampleMenu is displayed");
+        Assert.assertTrue(customAdapterPage.isSampleMenuDisplayed(), "sampleMenu is displayed");
     }
 
     @Test
     public void androidUIAutomatorDemoTest() {
-        CustomAdapterPage customAdapterPage =  new HomePage()
+        CustomAdapterPage customAdapterPage = new HomePage()
                 .openVies()
                 .openExpandableLists()
                 .openCustomAdapter()
                 .pressPeopleNamesNote();
 
-        Assert.assertTrue(customAdapterPage.isSampleMenuDisplayed(),"sampleMenu is displayed");
+        Assert.assertTrue(customAdapterPage.isSampleMenuDisplayed(), "sampleMenu is displayed");
     }
 
     @Test
@@ -81,7 +81,7 @@ public class ApiDemosTest extends BaseTest {
     }
 
     @Override
-    public String getResourceFilePath() {
-        return PROPERTIES.getProperty("demo.debug.apk");
+    public void setResourceFilePath() {
+        PROPERTIES.setProperty("apk", PROPERTIES.getProperty("demo.debug.apk"));
     }
 }

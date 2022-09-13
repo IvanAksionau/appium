@@ -8,7 +8,7 @@ import org.openqa.selenium.TakesScreenshot;
 import java.io.File;
 import java.io.IOException;
 
-import static ivan.demo.com.utils.WebDriverFactory.getDriverInstance;
+import static ivan.demo.com.utils.WebDriverFactory.getInstance;
 
 public final class WebDriverUtil {
     private WebDriverUtil() {
@@ -16,7 +16,7 @@ public final class WebDriverUtil {
 
     public static void getScreenshot(String name) {
         String filePath = System.getProperty("user.dir") + "\\target\\screenshot_" + name + ".png";
-        File screenshot = ((TakesScreenshot) getDriverInstance()).getScreenshotAs(OutputType.FILE);
+        File screenshot = ((TakesScreenshot) getInstance()).getScreenshotAs(OutputType.FILE);
         try {
             FileUtils.copyFile(screenshot, new File(filePath));
         } catch (IOException e) {
@@ -25,7 +25,7 @@ public final class WebDriverUtil {
     }
 
     public static void executeScript(String script) {
-        JavascriptExecutor jse = getDriverInstance();
+        JavascriptExecutor jse = getInstance();
         jse.executeScript(script);
    }
 }

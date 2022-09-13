@@ -19,31 +19,39 @@ import java.util.concurrent.TimeUnit;
 public final class WebDriverFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebDriverFactory.class);
     private static final Properties PROPERTIES = PropsUtil.getProps();
-    private static ThreadLocal<AndroidDriver<AndroidElement>> driverInstance;
+    private static volatile ThreadLocal<AndroidDriver<AndroidElement>> INSTANCE;
     private static DesiredCapabilities caps;
-    private static URL appiumServerUrl;
+    private static URL appiumServerUrl;// TODO: 9/13/2022 check if volatile variable is applicable here
 
     private WebDriverFactory() {
     }
 
-    public static AndroidDriver<AndroidElement> getDriverInstance() {
-        return driverInstance.get();
+    public static AndroidDriver<AndroidElement> getInstance() {
+        if (INSTANCE == null) {
+            synchronized (AndroidDriver.class) {
+                if (INSTANCE == null) {
+                    initInstance();
+                }
+            }
+        }
+        return INSTANCE.get();
     }
 
-    public static void initAndroidDriver(String apkFilePath) {
+    public static void initInstance() {
         LOGGER.info("initAndroidDriver method call----------------------------" + Thread.currentThread().getId());
         boolean isCloudBased = PROPERTIES.getProperty("emulator.location").equals("remote");
         if (isCloudBased) {
-            driverInstance = ThreadLocal.withInitial(WebDriverFactory::initRemoteAppiumServer);
+            INSTANCE = ThreadLocal.withInitial(WebDriverFactory:: initRemoteAppiumServer);
         } else {
-            driverInstance = ThreadLocal.withInitial(() -> WebDriverFactory.initLocalAppiumServer(apkFilePath));
+            INSTANCE = ThreadLocal.withInitial(() -> WebDriverFactory
+                    .initLocalAppiumServer(PROPERTIES.getProperty("apk")));
         }
 
-        getDriverInstance().manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        LOGGER.info("Android Driver was initiated"+ Thread.currentThread().getId());
+        INSTANCE.get().manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        LOGGER.info("Android Driver was initiated" + Thread.currentThread().getId());
     }
 
-    private static AndroidDriver<AndroidElement>  initLocalAppiumServer(String apkFilePath) {
+    private static AndroidDriver<AndroidElement> initLocalAppiumServer(String apkFilePath) {
         File apiFile = new File(apkFilePath);
         caps = new DesiredCapabilities();
 
@@ -92,9 +100,9 @@ public final class WebDriverFactory {
     }
 
     public static void quitAndroidDriver() {
-        if (getDriverInstance() != null) {
+        if (getInstance() != null) {
             LOGGER.info("quitAndroidDriver method call----------------------------" + Thread.currentThread().getId());
-            getDriverInstance().quit();
+            getInstance().quit();
         }
     }
 }
