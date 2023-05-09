@@ -5,8 +5,11 @@ Preconditions:
 - Download/install Android Studio and find out the Android SDK path
 - Download/install Node(to install Appium server, as Appium server is written on Node)
 - Set Java, Android SDK and Node Home Paths in Windows system
-![img.png](img.png)     ![img_1.png](img_1.png)
-- Install and start Appium server via node (run in cmd "npm install appium")
+
+![img_5.png](img_5.png)
+![img_6.png](img_6.png)
+
+- Install and start Appium server via node (run in cmd "npm install -g appium")
 
 # Commands list(in case investigation):
 - appium - it will start appium server

@@ -33,7 +33,7 @@ public class MobileBrowserDemoTest extends BaseTest {
     @BeforeClass
     private AndroidDriver<AndroidElement> getPreparedAndroidDriver() throws MalformedURLException {
         DesiredCapabilities cap = new DesiredCapabilities();
-        cap.setCapability(MobileCapabilityType.DEVICE_NAME, "Pixel 2 API 31");
+        cap.setCapability(MobileCapabilityType.DEVICE_NAME, PROPERTIES.getProperty("device.name"));
         cap.setCapability(MobileCapabilityType.AUTOMATION_NAME, "uiAutomator2");
         cap.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
 //        cap.setCapability("chromedriverExecutable","src/main/resources/chromedriver.exe");
