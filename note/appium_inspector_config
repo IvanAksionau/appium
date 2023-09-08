@@ -1,0 +1,32 @@
+
+physical android device setup:
+{
+  "appium:deviceName": "R58M52NYQTN",
+  "platformName": "Android",
+  "appium:automationName": "UIAutomator2",
+  "appium:disableIdLocatorAutocompletion": true,
+  "appium:noReset": true,
+  "appium:app": "/path/to/your.apk"
+}
+
+ios emulator setup:
+{
+  "appium:deviceName": "iphone 14",
+  "platformName": "iOS",
+  "appium:disableIdLocatorAutocompletion": true,
+  "appium:automationName": "xcuitest",
+  "noReset": true,
+  "appium:udid": "E655E1AD-1ADA-4752-9B8B-54280AA23B25",
+  "appium:app": "/path/to/your.zip"
+}
+
+android emulator setup:
+{
+  "appium:deviceName": "emulator-5554",
+  "platformName": "Android",
+  "appium:platformVersion": "14",
+  "appium:disableIdLocatorAutocompletion": true,
+  "noReset": true,
+  "appium:app": "/path/to/your.apk",
+  "appium:automationName": "UIAutomator2"
+}
