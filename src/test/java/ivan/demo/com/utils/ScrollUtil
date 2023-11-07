@@ -1,0 +1,676 @@
+package ivan.demo.com.utils;
+
+import static ivan.AppiumConstants.ANDROID_PLATFORM;
+import static ivan.AppiumConstants.IOS_PLATFORM;
+import static ivan.AppiumConstants.PLATFORM_NAME;
+import static ivan.demo.com.utils.MoveDirection.UP;
+
+import io.qameta.allure.Allure;
+import java.time.Duration;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import ivan.mobile.Device;
+import ivan.TicketType;
+import lombok.Getter;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.ElementNotInteractableException;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+
+@Getter
+public class ScrollUtil {
+
+  private static final String INVALID_SCROLL_DIRECTION = "Invalid scroll direction: ";
+  private static final String NOT_FOUND_DURING_SCROLLING
+    = "Element was not found during screen scrolling in direction ";
+
+  private Device device;
+  private Dimension dimension;
+  private String previousPageSource = "default";
+
+  public ScrollUtil(Device device) {
+    this.device = device;
+    this.dimension = device.getDriver().manage().window().getSize();
+  }
+
+  /**
+   * Based on a ticket type and the mobile platform, provide the xpath value to allocate the ticket
+   * webElement on a mobile screen
+   *
+   * @param ticketType type of ticket
+   * @return String xpath value
+   */
+  private String getTicketWebElementXpathExpressionValue(TicketType ticketType) {
+    String xpathExpression;
+    switch (ticketType) {
+      case GAME:
+        if (PLATFORM_NAME.equals(ANDROID_PLATFORM)) {
+          xpathExpression = "//android.widget.TextView[@resource-id='boxSingleGameTicket0']";
+        } else {
+          xpathExpression =
+            "//XCUIElementTypeOther[@name='ticket_list_row_0']/XCUIElementTypeStaticText";
+        }
+        break;
+      case EVENT:
+        if (PLATFORM_NAME.equals(ANDROID_PLATFORM)) {
+          xpathExpression = "//android.widget.TextView[@resource-id='boxEventTicket0']";
+        } else {
+          xpathExpression =
+            "//XCUIElementTypeOther[@name='ticket_list_row_0']/XCUIElementTypeStaticText";
+        }
+        break;
+      case PARKING_PASS:
+        if (PLATFORM_NAME.equals(ANDROID_PLATFORM)) {
+          xpathExpression = "//android.widget.TextView[@resource-id='boxParkingPasses0']";
+        } else {
+          xpathExpression =
+            "//XCUIElementTypeOther[@name='parking_pass_list_row0']/XCUIElementTypeStaticText";
+        }
+        break;
+      default:
+        throw new IllegalArgumentException("Invalid ticketType value: " + ticketType);
+    }
+    return xpathExpression;
+  }
+
+  /**
+   * Collects the text data of the tickets elements by scrolling them with elements indexes value
+   * until the all data is collected or the end of the scrollable area is reached.
+   *
+   * @param pixelsExtendScrollDistance distance in pixels from element top left corner
+   *                                   to start scrolling point
+   * @return List of tickets text data
+   */
+  public List<String> collectTicketsTextListWithScrollInDirectionByIndexes(
+    TicketType ticketType, int pixelsExtendScrollDistance) {
+
+    int indexNumber = 0;
+    List<String> finalCollection = new ArrayList<>();
+    WebElement element;
+    Deque<WebElement> currentCollection;
+    String xpathExpression = getTicketWebElementXpathExpressionValue(ticketType);
+    // wait till the list of tickets become displayed
+    element = waitForElementPresence(By.xpath(xpathExpression));
+    if (element == null) {
+      throw new NoSuchElementException("No available elements found in the list");
+    }
+    //expression to check the ticket visibility
+    Predicate<WebElement> isDisplayed = WebElement::isDisplayed;
+
+    String currentPageSource = "";
+    while (Boolean.FALSE.equals(isScrolledToTheEndOfDirection(currentPageSource))) {
+      //try to find the element on a screen by its xpath based on element index
+
+      currentCollection = getDevice().getDriver()
+        .findElements(By.xpath(xpathExpression.replace("0", "" + indexNumber)))
+        .stream().filter(isDisplayed)
+        .collect(Collectors.toCollection(ArrayDeque::new));
+
+      //take and remove the first element from collection and collect its text value
+      finalCollection.add(Objects.requireNonNull(currentCollection.pollFirst()).getText());
+      indexNumber++;
+
+      //try to find the next element with update index value
+      currentCollection = getDevice().getDriver()
+        .findElements(By.xpath(xpathExpression.replace("0", "" + indexNumber)))
+        .stream().filter(isDisplayed).collect(Collectors.toCollection(ArrayDeque::new));
+      currentPageSource = "";
+
+      //scroll the list of tickets to find the element by updated index
+      while (Boolean.FALSE.equals(isScrolledToTheEndOfDirection(currentPageSource))
+        && currentCollection.isEmpty()) {
+        Point location = element.getLocation();
+        int startY = location.getY();
+        int endY = location.getY() - (element.getSize().getHeight() + pixelsExtendScrollDistance);
+        performScrollingUsingSequence(500, location.getX(), startY, location.getX(), endY);
+        //try to find the element by updated index after scrolling the tickets list
+        currentCollection = getDevice().getDriver()
+          .findElements(By.xpath(xpathExpression.replace("0", "" + indexNumber)))
+          .stream().filter(isDisplayed).collect(Collectors.toCollection(ArrayDeque::new));
+        currentPageSource = getDevice().getDriver().getPageSource();
+        // if the element is found after scrolling, then save the element to proceed its text value
+        // if the element still not found, then back to loop cycle to repeat the scrolling
+        if (!currentCollection.isEmpty()) {
+          element = currentCollection.getFirst();
+          break;
+        }
+      }
+    }
+    return finalCollection;
+  }
+
+  /**
+   * Collects the text of elements as it scrolls in the specified direction (UP or LEFT)
+   * until the element is no longer visible or the end of the scrollable area is reached.
+   *
+   * @param elements                  elements locator
+   * @param direction                 direction to scroll
+   * @param pixelsDistanceFromElement distance in pixels from element to start scrolling point
+   * @return List of elements text
+   */
+  public List<String> collectElementsTextListWithScrollInDirection(List<WebElement> elements,
+                                                                   MoveDirection direction,
+                                                                   int pixelsDistanceFromElement) {
+
+    if (Boolean.FALSE.equals(waitForListWebElementsIsNotEmpty(5, elements))) {
+      throw new NoSuchElementException("No available elements found in the list");
+    }
+
+    int iterationNumber = 0;
+    String currentPageSource = "";
+    WebElement firstElement;
+    boolean isNotDisplayed = true;
+    List<String> finalCollection = new ArrayList<>();
+    int secondsWaitTillNotDisplayed = 2;
+    Deque<WebElement> currentCollection = elements.stream()
+      .filter(el -> !isNotDisplayed(el, secondsWaitTillNotDisplayed))
+      .collect(Collectors.toCollection(ArrayDeque::new));
+
+    // Loop to collect element texts while the end of the scrollable area isn't reached
+    // and the collected element is still visible
+    while (isNotDisplayed
+      && Boolean.FALSE.equals(isScrolledToTheEndOfDirection(currentPageSource))) {
+      // Remove and retrieve the first element
+      firstElement = currentCollection.pollFirst();
+      // add text from the first visible relative element
+      finalCollection.add(Objects.requireNonNull(firstElement).getText());
+      // move already added element in direction till it becomes invisible
+      isNotDisplayed =
+        moveTheElementInDirectionTillNotDisplayed(firstElement, direction,
+          pixelsDistanceFromElement);
+      iterationNumber++;
+      // update collection if element is moved
+      if (isNotDisplayed) {
+        currentCollection = elements.stream()
+          .filter(el -> !isNotDisplayed(el, secondsWaitTillNotDisplayed))
+          .collect(Collectors.toCollection(ArrayDeque::new));
+        currentPageSource = getDevice().getDriver().getPageSource();
+      }
+      if (currentCollection.isEmpty()) {
+        break;
+      }
+    }
+    // if there is only one iteration was done, then it means all the mobileElements stay visible
+    // then we collect all these elements from a mobile screen
+    if (iterationNumber == 1) {
+      finalCollection = elements.stream().map(WebElement::getText).collect(Collectors.toList());
+    } else {
+      // add all remaining element, because the page in no longer scrollable in direction
+      finalCollection.addAll(
+        currentCollection.stream().map(WebElement::getText).collect(Collectors.toList()));
+    }
+    return finalCollection;
+  }
+
+  /**
+   * Scrolls into list of elements in the specified direction (LEFT, RIGHT, UP, DOWN)
+   * until it finds the element or reaches the end of the scrollable area.
+   *
+   * @param visibleRelatives List WebElement to scroll into
+   * @param expected         WebElement expected to be found
+   * @param direction        direction to scroll
+   * @param percentToScroll  value in percent defining the distance to move
+   * @return WebElement found element
+   */
+  public WebElement scrollIntoListToElement(List<WebElement> visibleRelatives,
+                                            WebElement expected,
+                                            MoveDirection direction,
+                                            int percentToScroll) {
+
+    waitForListWebElementsIsNotEmpty(4, visibleRelatives);
+    Supplier<List<WebElement>> currentCollection = () -> visibleRelatives.stream()
+      .filter(WebElement::isDisplayed).collect(Collectors.toList());
+    if (currentCollection.get().isEmpty()) {
+      throw new NoSuchElementException("No displayed elements found in the list");
+    }
+
+    String currentPageSource = "";
+    while (Boolean.TRUE.equals(!isScrolledToTheEndOfDirection(currentPageSource))) {
+      switch (direction) {
+        case RIGHT:
+        case LEFT:
+          performHorizontalScrollIntoWebElementList(
+            currentCollection.get(), direction, percentToScroll);
+          break;
+        case UP:
+        case DOWN:
+          performVerticalScroll(direction, percentToScroll);
+          break;
+        default:
+          throw new IllegalArgumentException(INVALID_SCROLL_DIRECTION + direction);
+      }
+      if (isDisplayed(expected)) {
+        return expected;
+      }
+      currentPageSource = getDevice().getDriver().getPageSource();
+    }
+    throw new NoSuchElementException(NOT_FOUND_DURING_SCROLLING + direction);
+  }
+
+  /**
+   * Scrolls into list of elements in the specified direction (LEFT, RIGHT, UP, DOWN)
+   * until it finds the element with specific condition or reaches the end of the scrollable area.
+   *
+   * @param visibleRelatives List WebElement to scroll into
+   * @param direction        direction to scroll
+   * @param percentToScroll  value in percent defining the distance to move
+   * @param condition        condition expected element to have
+   * @return WebElement found element
+   */
+  public WebElement scrollIntoListToElementWithCondition(List<WebElement> visibleRelatives,
+                                                         MoveDirection direction,
+                                                         int percentToScroll,
+                                                         Predicate<WebElement> condition) {
+
+    if (Boolean.FALSE.equals(waitForListWebElementsIsNotEmpty(5, visibleRelatives))) {
+      throw new NoSuchElementException("No displayed elements found in the list");
+    }
+    String previousPageSource = "";
+    Supplier<List<WebElement>> currentCollection = () -> visibleRelatives.stream()
+      .filter(WebElement::isDisplayed).collect(Collectors.toList());
+
+    Optional<WebElement> expected =
+      currentCollection.get().stream().filter(condition).findFirst();
+    if (expected.isPresent() && (expected.get().isDisplayed())) {
+      return expected.get();
+    }
+
+    while (Boolean.TRUE.equals(!isScrolledToTheEndOfDirection(previousPageSource))) {
+      List<WebElement> webElements = currentCollection.get();
+      switch (direction) {
+        case RIGHT:
+        case LEFT:
+          performHorizontalScrollIntoWebElementList(
+            webElements, direction, percentToScroll);
+          break;
+        case UP:
+        case DOWN:
+          performVerticalScroll(direction, percentToScroll);
+          break;
+        default:
+          throw new IllegalArgumentException(INVALID_SCROLL_DIRECTION + direction);
+      }
+      expected = currentCollection.get().stream().filter(condition).findFirst();
+      if (expected.isPresent() && (expected.get().isDisplayed())) {
+        return expected.get();
+      }
+      previousPageSource = getDevice().getDriver().getPageSource();
+    }
+    throw new NoSuchElementException(NOT_FOUND_DURING_SCROLLING + direction);
+  }
+
+  /**
+   * Scrolls vertically in the specified direction (UP or DOWN)
+   * until it finds the element or reaches the end of the scrollable area.
+   *
+   * @param expected        expected webElement
+   * @param direction       direction to scroll
+   * @param secondsToWait   time in seconds wait element to be displayed after scrolling
+   * @param percentToScroll value in percent defining the distance to move
+   * @return WebElement found element
+   */
+  public WebElement verticallyScrollToElement(WebElement expected, MoveDirection direction,
+                                              int secondsToWait,
+                                              int percentToScroll) {
+    String currentPageSource = "";
+    while (Boolean.TRUE.equals(!isScrolledToTheEndOfDirection(currentPageSource))
+      && isNotDisplayed(expected, secondsToWait)) {
+      performVerticalScroll(direction, percentToScroll);
+      currentPageSource = getDevice().getDriver().getPageSource();
+    }
+    if (!isDisplayed(expected)) {
+      throw new NoSuchElementException(NOT_FOUND_DURING_SCROLLING + direction);
+    }
+    return expected;
+  }
+
+  /**
+   * Scrolls vertically in the specified direction (UP or DOWN)
+   * until it finds the element or reaches the end of the scrollable area,
+   * and verify if element is no longer displayed.
+   *
+   * @param expected        expected webElement
+   * @param direction       direction to scroll
+   * @param secondsToWait   time in seconds wait element to be displayed after scrolling
+   * @param percentToScroll value in percent defining the distance to move
+   * @return boolean reflection if the element is no longer displayed.
+   */
+  public boolean verticallyScrollToCheckTheElementIsNotPresent(WebElement expected,
+                                                               MoveDirection direction,
+                                                               int secondsToWait,
+                                                               int percentToScroll) {
+    try {
+      verticallyScrollToElement(expected, direction, secondsToWait, percentToScroll);
+    } catch (NoSuchElementException ex) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Scrolls vertically in the specified direction (UP or DOWN)
+   * not only until it finds the element or reaches the end of the scrollable area
+   * but also avoiding overlap by other element
+   *
+   * @param expected        expected webElement
+   * @param overlap         WebElement overlaps
+   * @param direction       direction to scroll
+   * @param secondsToWait   time in seconds wait element to be displayed after scrolling
+   * @param percentToScroll value in percent defining the distance to move
+   * @return WebElement found element
+   */
+  public WebElement verticallyScrollToElementAvoidOverlap(WebElement expected, WebElement overlap,
+                                                          MoveDirection direction,
+                                                          int secondsToWait,
+                                                          int percentToScroll) {
+    verticallyScrollToElement(expected, direction, secondsToWait, percentToScroll);
+    String currentPageSource = "";
+    while (Boolean.TRUE.equals(!isScrolledToTheEndOfDirection(currentPageSource))
+      && doElementsOverlap(overlap, expected)) {
+      performVerticalScroll(direction, percentToScroll);
+      currentPageSource = getDevice().getDriver().getPageSource();
+    }
+    if (!doElementsOverlap(overlap, expected)) {
+      return expected;
+    }
+    throw new ElementNotInteractableException("Expected element stay overlap by other element");
+  }
+
+  /**
+   * Performs a vertical scroll in the specified direction (UP or DOWN).
+   *
+   * @param direction       direction to scroll
+   * @param percentToScroll value in percent defining the distance to move
+   */
+  private void performVerticalScroll(MoveDirection direction, int percentToScroll) {
+    Dimension size = getDevice().getDriver().manage().window().getSize();
+    int screenHeight = size.getHeight();
+    // Define the start points for the scroll as the center of the screen.
+    int startX = size.getWidth() / 2;
+    int startY = size.getHeight() / 2;
+    int endY;
+
+    // Calculates the end point for the Y-axis to perform the scroll.
+    switch (direction) {
+      case UP:
+        endY = startY - ((screenHeight / 100) * percentToScroll);
+        break;
+      case DOWN:
+        endY = startY + ((screenHeight / 100) * percentToScroll);
+        break;
+      default:
+        throw new IllegalArgumentException(INVALID_SCROLL_DIRECTION + direction);
+    }
+    performScrollingUsingSequence(700, startX, startY, startX, endY);
+  }
+
+  /**
+   * Scroll the screen from one point to another
+   *
+   * @param moveTime duration of movement apptiled
+   * @param startX   X-axis starting point
+   * @param startY   Y-axis starting point
+   * @param endX     X-axis end point
+   * @param endY     Y-axis end point
+   */
+  private void performScrollingUsingSequence(int moveTime, int startX, int startY, int endX,
+                                             int endY) {
+    PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+
+    Sequence sequence = new Sequence(finger, 1)
+      .addAction(
+        finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, startY))
+      .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+      .addAction(
+        finger.createPointerMove(Duration.ofMillis(moveTime), PointerInput.Origin.viewport(), endX,
+          endY))
+      .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+    getDevice().getDriver().perform(List.of(sequence));
+  }
+
+  /**
+   * Verify whether one element overlaps another element
+   * Useful during scrolling to element when the element is displayed
+   * but is not clickable because of overlap
+   *
+   * @param element1 element
+   * @param element2 element
+   * @return boolean indicating whether one element overlaps another element
+   */
+  private boolean doElementsOverlap(WebElement element1, WebElement element2) {
+    int x1 = element1.getLocation().getX();
+    int y1 = element1.getLocation().getY();
+    int width1 = element1.getSize().getWidth();
+    int height1 = element1.getSize().getHeight();
+
+    int x2 = element2.getLocation().getX();
+    int y2 = element2.getLocation().getY();
+    int width2 = element2.getSize().getWidth();
+    int height2 = element2.getSize().getHeight();
+
+    // Check for overlap on both the X and Y axes
+    return x1 < x2 + width2 && x1 + width1 > x2 && y1 < y2 + height2 && y1 + height1 > y2;
+  }
+
+  /**
+   * Scrolls in the specified direction (UP or LEFT) until the element becomes not displayed.
+   *
+   * @param element                   element to move
+   * @param direction                 direction to scroll
+   * @param pixelsDistanceFromElement pixels amount to add
+   * @return boolean whether indication whether the element became not displayed
+   */
+  private boolean moveTheElementInDirectionTillNotDisplayed(WebElement element,
+                                                            MoveDirection direction,
+                                                            int pixelsDistanceFromElement) {
+    // X and Y coordinates of the element's top-left corner
+    // relative to the top-left corner of the web page
+    int startX;
+    int startY;
+    int endX;
+    int endY;
+
+    boolean isNotDisplayed = false;
+    String currentPageSource = "";
+    Point location = element.getLocation();
+    switch (direction) {
+      case UP:
+        startY = location.getY() + element.getSize().getHeight() + pixelsDistanceFromElement;
+        endY = 0;
+        startX = location.getX();
+        endX = startX;
+        break;
+      case LEFT:
+        startX = location.getX() + element.getSize().getWidth() + pixelsDistanceFromElement;
+        startY = location.getY();
+        endX = 0;
+        endY = startY;
+        break;
+      default:
+        throw new IllegalArgumentException(INVALID_SCROLL_DIRECTION + direction);
+    }
+    while (!isNotDisplayed
+      && Boolean.TRUE.equals(!isScrolledToTheEndOfDirection(currentPageSource))) {
+      performScrollingUsingSequence(direction == UP ? 2000 : 500, startX, startY, endX, endY);
+      isNotDisplayed = isNotDisplayed(element, 1);
+      currentPageSource =
+        isNotDisplayed ? currentPageSource : getDevice().getDriver().getPageSource();
+    }
+    return isNotDisplayed(element, 1);
+  }
+
+  /**
+   * Checks if the end of a scrollable section is reached
+   * by comparing the current page source with the previous one.
+   *
+   * @param currentPageSource value of previous page source
+   * @return boolean whether the page source is changed after scrolling
+   */
+  private boolean isScrolledToTheEndOfDirection(String currentPageSource) {
+    if (currentPageSource.isEmpty()) {
+      return false;
+    }
+    boolean isEquals = currentPageSource.equals(previousPageSource);
+    previousPageSource = currentPageSource;
+    return isEquals;
+  }
+
+  /**
+   * Scrolls horizontally in the specified direction (LEFT or RIGHT),
+   * starting from the center of the specified element.
+   *
+   * @param collected       List WebElement to scroll into
+   * @param direction       direction to scroll
+   * @param percentToScroll value in percent defining the distance to move
+   */
+  private void performHorizontalScrollIntoWebElementList(List<WebElement> collected,
+                                                         MoveDirection direction,
+                                                         int percentToScroll) {
+    if (Boolean.FALSE.equals(waitForListWebElementsIsNotEmpty(4, collected))) {
+      throw new NoSuchElementException("No available elements found in the list");
+    }
+    Dimension size = getDevice().getDriver().manage().window().getSize();
+    Dimension elementSize;
+    int startX;
+    int endX;
+    WebElement element;
+    // Calculates the start and end points for the scroll based on the element's position
+    // and the direction specified.
+    switch (direction) {
+      case LEFT:
+        element = collected.get(collected.size() - 1);
+        elementSize = element.getSize();
+        startX = element.getLocation().getX() - elementSize.getWidth() / 2;
+        startX = size.width - startX < 100 ? startX - 100 : startX;
+        endX = startX - element.getSize().getWidth() - ((size.width / 100) * percentToScroll);
+        break;
+      case RIGHT:
+        element = collected.get(0);
+        elementSize = element.getSize();
+        startX = element.getLocation().getX() + elementSize.getWidth() / 2;
+        endX = startX + element.getSize().getWidth() + ((size.width / 100) * percentToScroll);
+        break;
+      default:
+        throw new IllegalArgumentException(INVALID_SCROLL_DIRECTION + direction);
+    }
+    int startY = element.getLocation().getY() + elementSize.getHeight() / 2;
+    performScrollingUsingSequence(500, startX, startY, endX, startY);
+  }
+
+  /**
+   * Check for element is not displayed
+   *
+   * @param element       web element
+   * @param secondsToWait time in seconds
+   * @return boolean value reflecting if condition is succeed
+   */
+  public boolean isNotDisplayed(WebElement element, int secondsToWait) {
+    return waitForElementInVisibility(element, secondsToWait);
+  }
+
+  /**
+   * Wait for element invisibility
+   *
+   * @param element       element locator
+   * @param secondsToWait time in seconds
+   * @return boolean value reflecting if condition is succeed
+   */
+  private Boolean waitForElementInVisibility(WebElement element, int secondsToWait) {
+    try {
+      return waitUntilTrueOrTimeout(ExpectedConditions.invisibilityOf(element), secondsToWait);
+    } catch (TimeoutException ex) {
+      return false;
+    }
+  }
+
+  /**
+   * Wait until condition or timeout with time interval set
+   */
+  private <V> V waitUntilTrueOrTimeout(ExpectedCondition<V> condition, int secondsToWait) {
+    return getCustomFluentWait(secondsToWait).until(condition);
+  }
+
+  /**
+   * getFluentWait
+   *
+   * @return new FluentWait instance
+   */
+  private FluentWait<WebDriver> getCustomFluentWait(int seconds) {
+    return new FluentWait<WebDriver>(this.device.getDriver())
+      .withTimeout(Duration.ofSeconds(seconds))
+      .pollingEvery(Duration.ofSeconds(1))
+      .ignoring(StaleElementReferenceException.class)
+      .ignoring(NoSuchElementException.class)
+      .ignoring(Exception.class);
+  }
+
+  /**
+   * Checks whether element is displayed
+   */
+  private boolean isDisplayed(WebElement element) {
+    try {
+      return element.isDisplayed();
+    } catch (Exception var3) {
+      return false;
+    }
+  }
+
+  /**
+   * Wait for element presence in device
+   *
+   * @param by element locator
+   * @return boolean indicating where element has found
+   */
+  private WebElement waitForElementPresence(By by) {
+    try {
+      return waitUntilTrueOrTimeout(ExpectedConditions.presenceOfElementLocated(by), 6);
+    } catch (Exception exception) {
+      Allure.step("waitForElementPresence" + exception.getLocalizedMessage());
+      return null;
+    }
+  }
+
+  /**
+   * Wait for element attribute contains
+   *
+   * @param element   element locator
+   * @param attribute key attribute
+   * @param value     expected
+   * @return boolean indicating where attribute is equals or not
+   */
+  public boolean waitForElementAttributeEquals(WebElement element, String attribute, String value) {
+    try {
+      return waitUntilTrueOrTimeout(
+        ExpectedConditions.attributeToBe(element, attribute, value), 5);
+    } catch (Exception exception) {
+      Allure.step("waitForElementAttributeEquals" + exception.getLocalizedMessage());
+      return false;
+    }
+  }
+
+  /**
+   * Wait for list of webElements become not empty
+   *
+   * @return boolean indicating if list is not empty
+   */
+  public Boolean waitForListWebElementsIsNotEmpty(int seconds, List<WebElement> elements) {
+    return getCustomFluentWait(seconds).until(driver -> !elements.isEmpty());
+  }
+}
