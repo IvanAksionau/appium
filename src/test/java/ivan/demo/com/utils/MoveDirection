@@ -1,0 +1,11 @@
+package ivan.demo.com.utils;
+
+/**
+ * Enumeration defining the possible directions for scroll actions.
+ */
+public enum MoveDirection {
+  LEFT,
+  RIGHT,
+  UP,
+  DOWN
+}
