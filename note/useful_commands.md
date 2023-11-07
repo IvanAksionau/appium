@@ -15,6 +15,9 @@ This document enumerates useful commands that you can use during Android and iOS
 - **List all available devices:**
 ```xcrun simctl list devices```
 
+- **Get id of connected physical device:**
+```idevice_id -l```
+
 - **kill appium session:**
 ```kill -9 $(pgrep -f appium)```
 
