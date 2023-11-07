@@ -32,6 +32,13 @@ public final class RuntimeUtil {
         service = new AppiumServiceBuilder()
                 .withIPAddress(PROPERTIES.getProperty("ip.address"))
                 .usingPort(PORT)
+//                .withArgument(() -> "--allow-insecure", "chromedriver_autodownload")
+//                .withArgument(() -> "--relaxed-security")
+//                .withArgument(() -> "--log-level", "error")
+//                .withArgument(() -> "--local-timezone")
+//                .withArgument(() -> "--log-timestamp")
+//                .withArgument(() -> "--session-override")
+//                .withArgument(() -> "--default-capabilities", "{\"deviceName\":\"" + PROPERTIES.getProperty("device.name") + "\"}")
                 .build();
         if (!service.isRunning()) {
             service.start();
