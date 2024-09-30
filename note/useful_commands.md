@@ -14,6 +14,8 @@ This document enumerates useful commands that you can use during Android and iOS
 
 - **List all available devices:**
 ```xcrun simctl list devices```
+
+- **List all booted devices:**
 ```xcrun simctl list | egrep '(Booted)'```
 
 - **Reset the iOS simulator by using the command line. The following command will erase all content and settings from the simulator:**
